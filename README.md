@@ -117,6 +117,22 @@ This project demonstrates how data analytics and visualization techniques can tr
 
 The PhonePe Pulse dashboard provides an interactive platform to explore digital transaction trends and understand user behavior across India.
 
+### 📌 Conclusion
+(your text)
+
+---
+
+## 📸 Dashboard Preview
+
+### Home Page
+
+![Dashboard Home](dashboard_home.png)
+
+### 👩‍💻 Author
+
+**Ragini Boya**  
+Data Science Project – PhonePe Pulse Dashboard
+
 ---
 
 ## 👩‍💻 Author
