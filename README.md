@@ -1,5 +1,10 @@
 # 📊 PhonePe Pulse Data Visualization Dashboard
 
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)
+![MySQL](https://img.shields.io/badge/Database-MySQL-orange)
+![Plotly](https://img.shields.io/badge/Visualization-Plotly-green)
+
 ## 📌 Project Overview
 The PhonePe Pulse Data Visualization project analyzes digital payment trends across India using the PhonePe Pulse dataset. The project converts raw transaction data into meaningful insights through interactive dashboards.
 
