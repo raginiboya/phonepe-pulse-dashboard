@@ -1,0 +1,175 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import mysql.connector
+
+# -------------------------------
+# 1️⃣ Connect to MySQL
+# -------------------------------
+connection = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="720767",
+    database="phonepe"
+)
+
+st.title("Case Study 1: Decoding Transaction Dynamics on PhonePe")
+st.markdown("""
+This dashboard visualizes:
+- Top States by Transaction Amount and Count  
+- Quarterly Transaction Trends  
+- Average Transaction Amount per Quarter  
+- Total Transactions per State per Quarter
+""")
+
+# -------------------------------
+# Query Helper Function
+# -------------------------------
+@st.cache_data(ttl=3600)
+def run_query(sql):
+    return pd.read_sql(sql, connection)
+
+# -------------------------------
+# 2️⃣ Top 10 States by Transaction Amount
+# -------------------------------
+st.header("Top 10 States by Transaction Amount")
+
+query_top_states = """
+SELECT state, SUM(transaction_amount) AS total_amount
+FROM aggregated_transaction
+GROUP BY state
+ORDER BY total_amount DESC
+LIMIT 10;
+"""
+df_top_states = run_query(query_top_states)
+st.dataframe(df_top_states)
+
+# Bar Chart
+fig1, ax1 = plt.subplots(figsize=(10,6))
+sns.barplot(x="total_amount", y="state", data=df_top_states, palette="viridis", ax=ax1)
+ax1.set_title("Top 10 States by Transaction Amount")
+ax1.set_xlabel("Transaction Amount")
+ax1.set_ylabel("State")
+st.pyplot(fig1)
+
+# Pie Chart
+fig2, ax2 = plt.subplots(figsize=(8,8))
+ax2.pie(
+    df_top_states["total_amount"],
+    labels=df_top_states["state"],
+    autopct="%1.1f%%",
+    startangle=140,
+    colors=sns.color_palette("Set3")
+)
+ax2.set_title("Transaction Share by Top 10 States")
+st.pyplot(fig2)
+
+# -------------------------------
+# 3️⃣ Quarterly Transaction Trend
+# -------------------------------
+st.header("Quarterly Transaction Trend")
+query_quarterly = """
+SELECT year, quarter, SUM(transaction_amount) AS total_amount
+FROM aggregated_transaction
+GROUP BY year, quarter
+ORDER BY year, quarter;
+"""
+df_quarterly = run_query(query_quarterly)
+df_quarterly["Year_Quarter"] = df_quarterly["year"].astype(str) + "-Q" + df_quarterly["quarter"].astype(str)
+
+fig3, ax3 = plt.subplots(figsize=(12,6))
+ax3.plot(df_quarterly["Year_Quarter"], df_quarterly["total_amount"], marker="o", color="blue")
+ax3.set_title("Quarterly Transaction Trend")
+ax3.set_xlabel("Year - Quarter")
+ax3.set_ylabel("Transaction Amount")
+ax3.tick_params(axis='x', rotation=45)
+ax3.grid(True)
+st.pyplot(fig3)
+
+# -------------------------------
+# 4️⃣ Top 10 States by Transaction Count
+# -------------------------------
+st.header("Top 10 States by Transaction Count")
+query_top_states_count = """
+SELECT state, SUM(transaction_count) AS total_count
+FROM aggregated_transaction
+GROUP BY state
+ORDER BY total_count DESC
+LIMIT 10;
+"""
+df_top_states_count = run_query(query_top_states_count)
+st.dataframe(df_top_states_count)
+
+# Bar Chart
+fig4, ax4 = plt.subplots(figsize=(10,6))
+sns.barplot(x="total_count", y="state", data=df_top_states_count, palette="magma", ax=ax4)
+ax4.set_title("Top 10 States by Transaction Count")
+ax4.set_xlabel("Transaction Count")
+ax4.set_ylabel("State")
+st.pyplot(fig4)
+
+# Pie Chart
+fig5, ax5 = plt.subplots(figsize=(8,8))
+ax5.pie(
+    df_top_states_count["total_count"],
+    labels=df_top_states_count["state"],
+    autopct="%1.1f%%",
+    startangle=140,
+    colors=sns.color_palette("Set2")
+)
+ax5.set_title("Transaction Count Share by Top 10 States")
+st.pyplot(fig5)
+
+# -------------------------------
+# 5️⃣ Average Transaction Amount per Quarter
+# -------------------------------
+st.header("Average Transaction Amount per Quarter")
+query_avg_quarter = """
+SELECT year, quarter, AVG(transaction_amount) AS avg_amount
+FROM aggregated_transaction
+GROUP BY year, quarter
+ORDER BY year, quarter;
+"""
+df_avg_quarter = run_query(query_avg_quarter)
+df_avg_quarter["Year_Quarter"] = df_avg_quarter["year"].astype(str) + "-Q" + df_avg_quarter["quarter"].astype(str)
+
+fig6, ax6 = plt.subplots(figsize=(12,6))
+ax6.plot(df_avg_quarter["Year_Quarter"], df_avg_quarter["avg_amount"], marker="o", color="green")
+ax6.set_title("Average Transaction Amount per Quarter")
+ax6.set_xlabel("Year - Quarter")
+ax6.set_ylabel("Average Transaction Amount")
+ax6.tick_params(axis='x', rotation=45)
+ax6.grid(True)
+st.pyplot(fig6)
+
+# -------------------------------
+# 6️⃣ Total Transactions per State per Quarter (Multi-Line)
+# -------------------------------
+st.header("Total Transactions per State per Quarter")
+query_state_quarter = """
+SELECT state, year, quarter, SUM(transaction_amount) AS total_amount
+FROM aggregated_transaction
+GROUP BY state, year, quarter
+ORDER BY state, year, quarter;
+"""
+df_state_quarter = run_query(query_state_quarter)
+df_state_quarter["Year_Quarter"] = df_state_quarter["year"].astype(str) + "-Q" + df_state_quarter["quarter"].astype(str)
+
+fig7, ax7 = plt.subplots(figsize=(12,6))
+for state in df_state_quarter["state"].unique():
+    temp = df_state_quarter[df_state_quarter["state"] == state]
+    ax7.plot(temp["Year_Quarter"], temp["total_amount"], marker="o", label=state)
+
+ax7.set_title("Total Transactions per State per Quarter")
+ax7.set_xlabel("Year - Quarter")
+ax7.set_ylabel("Transaction Amount")
+ax7.tick_params(axis='x', rotation=45)
+ax7.grid(True)
+ax7.legend()
+st.pyplot(fig7)
+
+# -------------------------------
+# Close Connection
+# -------------------------------
+connection.close()
