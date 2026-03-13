@@ -137,10 +137,3 @@ The PhonePe Pulse dashboard provides an interactive platform to explore digital 
 
 **Ragini Boya**  
 Data Science Project – PhonePe Pulse Dashboard
-
----
-
-## 👩‍💻 Author
-
-**Ragini Boya**  
-Data Science Project – PhonePe Pulse Dashboard
