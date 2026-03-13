@@ -121,10 +121,6 @@ Each case study includes:
 This project demonstrates how data analytics and visualization techniques can transform raw digital payment data into actionable insights.
 
 The PhonePe Pulse dashboard provides an interactive platform to explore digital transaction trends and understand user behavior across India.
-
-### 📌 Conclusion
-(your text)
-
 ---
 
 ## 📸 Dashboard Preview
